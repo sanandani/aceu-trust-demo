@@ -35,3 +35,15 @@ The runtime container runs as a non-root user and includes a health check.
 All profiles are fictional. ACE-U values in this version are hand-authored
 illustrations, not empirically validated scores or assessments of real people.
 Do not use this demo for hiring or other consequential decisions.
+
+## Tests
+
+```bash
+python3 -m venv .venv
+./.venv/bin/python -m pip install -r requirements-dev.txt
+./.venv/bin/python -m pytest -q
+```
+
+For a guided explanation, see [the Docker walkthrough](docs/DOCKER-WALKTHROUGH.md).
+The illustrative values are calculated from synthetic example evidence in
+`scoring.py`; they are not validated measures of human trustworthiness.

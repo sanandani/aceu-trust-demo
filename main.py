@@ -1,39 +1,70 @@
 from fastapi import FastAPI, HTTPException
+from scoring import calculate_aceu
 
-app = FastAPI(title="ACE-U Trust Demo")
+app = FastAPI(
+    title="ACE-U Trust Demo",
+    description="Synthetic, educational demonstration; not a real-person assessment.",
+)
 
-# Fictional examples, not assessments of real people.
 PROFILES = {
     "expert": {
         "name": "Morgan (synthetic)",
-        "authenticity": [0.8, "Work artifacts align with stated experience."],
-        "credibility": [0.9, "Example includes documented domain work."],
-        "empathy": [0.4, "Limited collaboration evidence is provided; this does not imply low empathy."],
-        "uniqueness": [0.3, "Deep specialization, with few cross-domain examples."],
+        "claims": [
+            {"text": "Builds identity systems", "artifact": "identity-api-demo"},
+            {"text": "Writes about system design", "artifact": "architecture-note"},
+        ],
+        "projects": ["identity-api-demo", "architecture-note", "service-design-demo"],
+        "credential_examples": ["fictional credential"],
+        "peer_support_examples": [],
+        "cross_domain_projects": [],
     },
     "builder": {
         "name": "Avery (synthetic)",
-        "authenticity": [0.9, "Projects align with stated interests."],
-        "credibility": [0.6, "Example includes documented projects."],
-        "empathy": [0.9, "Example includes mentoring and substantive peer feedback."],
-        "uniqueness": [0.7, "Combines technical and community-building work."],
+        "claims": [
+            {"text": "Builds developer tools", "artifact": "developer-tool-demo"},
+            {"text": "Mentors peers", "artifact": "fictional-mentoring-note"},
+        ],
+        "projects": ["developer-tool-demo", "community-guide"],
+        "credential_examples": [],
+        "peer_support_examples": [
+            "Detailed review of a peer's project",
+            "Mentoring note shared with permission in this fictional scenario",
+            "Collaborative troubleshooting example",
+        ],
+        "cross_domain_projects": [
+            {"name": "community-guide", "domains": ["software", "education"]},
+            {"name": "developer-tool-demo", "domains": ["software", "community"]},
+        ],
     },
     "explorer": {
         "name": "Riley (synthetic)",
-        "authenticity": [0.7, "Projects support the stated interests."],
-        "credibility": [0.5, "Promising work, but a short documented track record."],
-        "empathy": [0.7, "Example includes collaborative work."],
-        "uniqueness": [0.9, "Combines experience across relevant domains."],
+        "claims": [
+            {"text": "Explores identity and accessibility", "artifact": "prototype"}
+        ],
+        "projects": ["prototype"],
+        "credential_examples": [],
+        "peer_support_examples": ["Collaborative prototype review"],
+        "cross_domain_projects": [
+            {"name": "prototype", "domains": ["identity", "accessibility"]},
+            {"name": "research-demo", "domains": ["design", "software"]},
+            {"name": "workshop", "domains": ["education", "identity"]},
+        ],
     },
 }
+
 
 @app.get("/health")
 def health():
     return {"status": "ok"}
 
+
 @app.get("/profiles")
 def list_profiles():
-    return [{"id": key, "name": value["name"]} for key, value in PROFILES.items()]
+    return [
+        {"id": profile_id, "name": profile["name"]}
+        for profile_id, profile in PROFILES.items()
+    ]
+
 
 @app.get("/profiles/{profile_id}/aceu")
 def aceu(profile_id: str):
@@ -43,9 +74,9 @@ def aceu(profile_id: str):
     return {
         "profile_id": profile_id,
         "name": profile["name"],
-        "dimensions": {
-            key: {"illustrative_value": profile[key][0], "explanation": profile[key][1]}
-            for key in ("authenticity", "credibility", "empathy", "uniqueness")
-        },
-        "limitation": "Synthetic illustration only; these are not validated trust scores.",
+        "dimensions": calculate_aceu(profile),
+        "limitation": (
+            "Synthetic educational example only. Indices are unvalidated "
+            "and must not be used to assess real people or make hiring decisions."
+        ),
     }
