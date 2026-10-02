@@ -52,3 +52,9 @@ def test_supported_claims_change_example_index():
     })
     assert before["authenticity"]["illustrative_index"] == 0.0
     assert after["authenticity"]["illustrative_index"] == 1.0
+
+
+def test_root_redirects_to_docs():
+    response = client.get("/", follow_redirects=False)
+    assert response.status_code in (302, 307)
+    assert response.headers["location"] == "/docs"

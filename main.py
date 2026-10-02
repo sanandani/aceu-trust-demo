@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
 from scoring import calculate_aceu
 
 app = FastAPI(
@@ -51,6 +52,11 @@ PROFILES = {
         ],
     },
 }
+
+
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse(url="/docs")
 
 
 @app.get("/health")
