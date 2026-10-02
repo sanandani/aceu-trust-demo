@@ -32,9 +32,9 @@ The runtime container runs as a non-root user and includes a health check.
 
 ## Important limitation
 
-All profiles are fictional. ACE-U values in this version are hand-authored
-illustrations, not empirically validated scores or assessments of real people.
-Do not use this demo for hiring or other consequential decisions.
+All profiles and evidence are fictional. The illustrative indices are calculated
+using transparent, unvalidated rules over synthetic examples; they are not assessments
+of real people. Do not use this demo for hiring or other consequential decisions.
 
 ## Tests
 
