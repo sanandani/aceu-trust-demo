@@ -1,32 +1,16 @@
 name: CI
-
 on:
   push:
-    branches: [main]
   pull_request:
-    branches: [main]
-
-permissions:
-  contents: read
-
 jobs:
-  test-and-build:
+  test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out source
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-
-      - name: Install test dependencies
-        run: python -m pip install --upgrade pip && python -m pip install -r requirements-dev.txt
-
-      - name: Run tests
-        run: python -m pytest -q
-
-      - name: Build Docker image
-        run: docker build --tag aceu-trust-demo:ci .
+          python-version: '3.12'
+      - run: python -m pip install '.[dev]'
+      - run: pytest
+      - run: aceu-entra --input examples/sample-export.json --format json --out /tmp/report.json
+      - run: docker build -t aceu-entra-trust .

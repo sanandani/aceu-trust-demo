@@ -1,49 +1,44 @@
-# ACE-U Trust Demo
+# ACE-U Entra Trust
 
-A small, Dockerized educational demo inspired by Shubham Anandani's
-“Trust-Aware Professional Identity Representation in AI-Mediated Systems”
-(IEEE SoutheastCon 2026).
+**v0.1** · Read-only scoring for Microsoft Entra workload identities · [Project homepage](https://imshubh.com)
 
-ACE-U represents four distinct dimensions of professional identity:
-Authenticity, Credibility, Empathy, and Uniqueness.
+`aceu-entra-trust` scores application identities on Authenticity, Uniqueness, and Credibility (ACE-U). It reads saved Microsoft Graph JSON offline or queries Graph v1.0 with read permissions. It never changes tenant state. The score is a transparent triage aid, not a security certification.
 
-## Run locally
+## Install and run offline
 
-Prerequisite: Docker Desktop.
+Requires Python 3.10+.
 
 ```bash
-docker compose up --build -d
+python -m pip install '.[dev]'
+pytest
+aceu-entra --input examples/sample-export.json --format markdown
+aceu-entra --input examples/sample-export.json --format sarif --out results.sarif --fail-under 55
 ```
 
-Open http://localhost:8000/docs for the interactive API documentation.
+Formats: `json`, `markdown`, and `sarif` (SARIF 2.1.0). `--out -` writes to stdout. Each report carries the project link [https://imshubh.com](https://imshubh.com).
 
-Example endpoints:
+## Live, read-only Graph audit
 
-- `GET /health`
-- `GET /profiles`
-- `GET /profiles/builder/aceu`
-
-Stop the demo with `docker compose down`.
-
-## Docker design
-
-The Dockerfile uses separate dependency-builder and runtime stages.
-The runtime container runs as a non-root user and includes a health check.
-
-## Important limitation
-
-All profiles and evidence are fictional. The illustrative indices are calculated
-using transparent, unvalidated rules over synthetic examples; they are not assessments
-of real people. Do not use this demo for hiring or other consequential decisions.
-
-## Tests
+Install `python -m pip install '.[graph]'`, then configure `GRAPH_TOKEN` or Azure Identity's `DefaultAzureCredential`. The token needs read access for applications, service principals, application owners, federated identity credentials, and app role assignments. `GRAPH_TOKEN` takes precedence. Graph 403/404 responses for per-application relationships are treated as unavailable or empty; other Graph and network errors stop the run. Configure the matching permissions to get complete results.
 
 ```bash
-python3 -m venv .venv
-./.venv/bin/python -m pip install -r requirements-dev.txt
-./.venv/bin/python -m pytest -q
+aceu-entra --format json --out tenant-report.json
 ```
 
-For a guided explanation, see [the Docker walkthrough](docs/DOCKER-WALKTHROUGH.md).
-The illustrative values are calculated from synthetic example evidence in
-`scoring.py`; they are not validated measures of human trustworthiness.
+## Model
+
+Total = `0.4 × Authenticity + 0.2 × Uniqueness + 0.4 × Credibility`. Scores are clamped to 0–100. Bands: **trusted** at 80+, **review** at 55–79.99, **risky** below 55.
+
+See [trust model](docs/trust-model.md), [roadmap](docs/roadmap.md), and [contributing](CONTRIBUTING.md).
+
+## Current scope and unimplemented features
+
+v0.1 assesses application registrations using credential age and expiry, duplicate display names, audience, owner presence, and app role assignment count. It does not yet evaluate Conditional Access coverage for workload identities, sign-in activity, named privileged roles, managed identities comprehensively, or Entra agent identities. It has no HTML report, `azd`/Bicep deployment, YAML threshold configuration, JUnit output, or Compose example. These are tracked in the roadmap. Graph pagination is supported for collection reads.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
+
+---
+
+Read-only workload identity triage from [imshubh.com](https://imshubh.com).

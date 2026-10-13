@@ -4,3 +4,10 @@ __pycache__/
 .env
 .DS_Store
 .pytest_cache/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+build/
+dist/
