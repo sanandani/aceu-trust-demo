@@ -1,0 +1,36 @@
+{
+  "applications": [
+    {
+      "id": "app-federated",
+      "appId": "11111111-1111-1111-1111-111111111111",
+      "displayName": "ci-deploy-federated",
+      "signInAudience": "AzureADMyOrg",
+      "passwordCredentials": [],
+      "keyCredentials": [],
+      "federatedIdentityCredentials": [{"name": "github-actions"}]
+    },
+    {
+      "id": "app-risky",
+      "appId": "22222222-2222-2222-2222-222222222222",
+      "displayName": "legacy-worker",
+      "signInAudience": "AzureADMyOrg",
+      "passwordCredentials": [{"keyId": "secret-1", "startDateTime": "2025-01-01T00:00:00Z", "endDateTime": "2026-01-01T00:00:00Z"}],
+      "keyCredentials": []
+    },
+    {
+      "id": "app-duplicate",
+      "appId": "33333333-3333-3333-3333-333333333333",
+      "displayName": "legacy-worker",
+      "signInAudience": "AzureADMultipleOrgs",
+      "passwordCredentials": [],
+      "keyCredentials": []
+    }
+  ],
+  "servicePrincipals": [
+    {"id": "sp-federated", "appId": "11111111-1111-1111-1111-111111111111"},
+    {"id": "sp-risky", "appId": "22222222-2222-2222-2222-222222222222"}
+  ],
+  "federatedIdentityCredentials": {"app-federated": [{"name": "github-actions"}]},
+  "owners": {"app-federated": [{"id": "owner-1"}], "app-duplicate": [{"id": "owner-2"}]},
+  "appRoleAssignments": {"sp-risky": [{"id": "1"}, {"id": "2"}, {"id": "3"}, {"id": "4"}, {"id": "5"}, {"id": "6"}, {"id": "7"}, {"id": "8"}, {"id": "9"}, {"id": "10"}, {"id": "11"}, {"id": "12"}]}
+}
