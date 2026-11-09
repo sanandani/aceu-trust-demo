@@ -29,12 +29,13 @@ jobs:
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
       - run: python -m pip install '.[graph]'
       - name: Run Entra audit
+        id: audit
         if: ${{ env.AZURE_CLIENT_ID != '' && env.AZURE_TENANT_ID != '' && env.AZURE_SUBSCRIPTION_ID != '' }}
         run: aceu-entra --format sarif --out aceu-results.sarif
       - name: Explain skipped audit
         if: ${{ env.AZURE_CLIENT_ID == '' || env.AZURE_TENANT_ID == '' || env.AZURE_SUBSCRIPTION_ID == '' }}
         run: echo '::warning::Audit skipped. Configure AZURE_CLIENT_ID, AZURE_TENANT_ID, and AZURE_SUBSCRIPTION_ID repository secrets.'
-      - uses: github/codeql-action/upload-sarif@v3
-        if: ${{ always() && hashFiles('aceu-results.sarif') != '' }}
+      - uses: github/codeql-action/upload-sarif@v4
+        if: ${{ always() && steps.audit.outcome == 'success' }}
         with:
           sarif_file: aceu-results.sarif
